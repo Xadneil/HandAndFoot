@@ -64,10 +64,6 @@ public class Server {
 	public Server() {
 		discard = new ArrayList<>();
 		draw = new LinkedList<>();
-		board.add(new HashMap<Integer, ArrayList<Group>>());
-		board.add(new HashMap<Integer, ArrayList<Group>>());
-		down[0] = false;
-		down[1] = false;
 		score[0] = 0;
 		score[1] = 0;
 	}
@@ -78,6 +74,14 @@ public class Server {
 	public void startRound() {
 		draw.clear();
 		discard.clear();
+		board.clear();
+		board.add(new HashMap<Integer, ArrayList<Group>>());
+		board.add(new HashMap<Integer, ArrayList<Group>>());
+		down[0] = false;
+		down[1] = false;
+		for (Player p : players) {
+			p.resetCards();
+		}
 		for (int i = 0; i < 5; i++) {
 			draw.addAll(new Deck());
 		}

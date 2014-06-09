@@ -19,8 +19,7 @@ public class Player {
 	public Player(Socket socket, int number) {
 		this.socket = new SocketReader(socket, this);
 		this.number = number;
-		hand = new ArrayList<>();
-		foot = new ArrayList<>();
+		resetCards();
 	}
 
 	public void startListening() {
@@ -64,5 +63,11 @@ public class Player {
 		this.inFoot = true;
 		hand = foot;
 		foot = null;
+	}
+
+	public void resetCards() {
+		hand = new ArrayList<>();
+		foot = new ArrayList<>();
+		inFoot = false;
 	}
 }
