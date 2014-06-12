@@ -35,7 +35,6 @@ import com.xadneil.client.net.Discovery.GameDetails;
 import com.xadneil.client.net.Network;
 import com.xadneil.client.net.Packet;
 import com.xadneil.client.net.PacketCreator;
-import com.xadneil.server.Server;
 
 /**
  * Hand and Foot client
@@ -181,8 +180,7 @@ public class Main {
 		JMenuItem mntmHostGame = new JMenuItem("Host Game");
 		mntmHostGame.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Server.getInstance().host(2 /* TODO testing or poll */,
-						new Server.IntegratedServer(Main.this, System.out));
+				new NumPlayers(Main.this).setVisible(true);
 			}
 		});
 		mnGame.add(mntmHostGame);
