@@ -66,7 +66,11 @@ public class SocketReader extends Thread {
 				PacketHandler h = PacketProcessor.getProcessor().getHandler(
 						packet.getOpcode());
 				if (h != null)
-					h.handlePacket(packet, player);
+					try {
+						h.handlePacket(packet, player);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				else
 					System.out.println("Unknown opcode " + packet.getOpcode());
 			}

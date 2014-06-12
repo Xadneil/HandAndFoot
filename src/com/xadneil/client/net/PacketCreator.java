@@ -32,10 +32,9 @@ public class PacketCreator {
 		return ret;
 	}
 
-	public static Packet login(String username, char[] password) {
+	public static Packet login(String username) {
 		Packet ret = new Packet(SendOpcode.LOGIN);
 		ret.add(username);
-		ret.add(new String(password));
 		return ret;
 	}
 

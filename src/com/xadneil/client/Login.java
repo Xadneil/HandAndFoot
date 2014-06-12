@@ -2,23 +2,23 @@ package com.xadneil.client;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
-import javax.swing.JPasswordField;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
+import javax.swing.border.EmptyBorder;
+import javax.swing.BoxLayout;
 
 @SuppressWarnings("serial")
 public class Login extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
-	private JPasswordField passwordField;
 	private JTextField textField;
+	private JLabel lblError;
 
 	/**
 	 * Create the dialog.
@@ -29,12 +29,12 @@ public class Login extends JDialog {
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
-		contentPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
 		{
 			JPanel panel = new JPanel();
 			contentPanel.add(panel);
 			{
-				JLabel lblUsername = new JLabel("Username");
+				JLabel lblUsername = new JLabel("Nickname");
 				panel.add(lblUsername);
 			}
 			{
@@ -44,17 +44,8 @@ public class Login extends JDialog {
 			}
 		}
 		{
-			JPanel panel = new JPanel();
-			contentPanel.add(panel);
-			{
-				JLabel lblPassword = new JLabel("Password");
-				panel.add(lblPassword);
-			}
-			{
-				passwordField = new JPasswordField();
-				passwordField.setColumns(15);
-				panel.add(passwordField);
-			}
+			lblError = new JLabel("");
+			contentPanel.add(lblError);
 		}
 		{
 			JPanel buttonPane = new JPanel();
@@ -64,8 +55,7 @@ public class Login extends JDialog {
 				JButton okButton = new JButton("OK");
 				okButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						game.login(textField.getText(), passwordField.getPassword());
-						dispose();
+						game.login(textField.getText());
 					}
 				});
 				okButton.setActionCommand("OK");
@@ -85,4 +75,20 @@ public class Login extends JDialog {
 		}
 	}
 
+	public void setSuccess(boolean success) {
+		if (success) {
+			dispose();
+		} else {
+			new Thread() {
+				public void run() {
+					lblError.setText("That name is already being used.");
+					try {
+						Thread.sleep(3500);
+					} catch (InterruptedException e) {
+					}
+					lblError.setText("");
+				}
+			}.start();
+		}
+	}
 }

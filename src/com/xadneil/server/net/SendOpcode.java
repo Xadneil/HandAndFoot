@@ -17,7 +17,8 @@ public enum SendOpcode implements Opcode {
 	END_ROUND(12),
 	END_REQUIREMENTS(13),
 	PLAY_OTHER(14),
-	CLEAR(15);
+	CLEAR(15),
+	LOGIN(16);
 
 	SendOpcode(int value) {
 		this.value = value;

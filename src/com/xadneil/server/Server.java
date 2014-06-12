@@ -132,20 +132,27 @@ public class Server {
 	 *            player name
 	 * @param number
 	 *            player number
+	 * @return success, if there is no duplicate
 	 */
-	public void setName(String name, int number) {
+	public boolean setName(String name, int number) {
 		names[number] = name;
 		boolean start = true;
+		int numDuplicates = 0;
 		for (String n : names) {
 			if (n == null) {
 				start = false;
-				break;
+			} else if (n.equalsIgnoreCase(name)) {
+				numDuplicates++;
 			}
+		}
+		if (numDuplicates > 1) {
+			return false;
 		}
 		if (start) {
 			out.println("All names received. Starting game.");
 			startRound();
 		}
+		return true;
 	}
 
 	/**

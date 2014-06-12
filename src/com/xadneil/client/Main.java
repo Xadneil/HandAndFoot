@@ -60,6 +60,7 @@ public class Main {
 	private Card pending;
 	private boolean hasDrawn;
 	private int toDiscard = -1;
+	protected Login loginDialog;
 	public static boolean local = true;
 	private static byte[] sorting;
 	public static boolean ascending = true;
@@ -373,8 +374,10 @@ public class Main {
 			@Override
 			public void done() {
 				try {
-					if (get())
-						new Login(Main.this).setVisible(true);
+					if (get()) {
+						loginDialog = new Login(Main.this);
+						loginDialog.setVisible(true);
+					}
 				} catch (InterruptedException | ExecutionException e) {
 					e.printStackTrace();
 				}
@@ -424,8 +427,8 @@ public class Main {
 		surface.setAlive(false);
 	}
 
-	public void login(String username, char[] password) {
-		network.send(PacketCreator.login(username, password));
+	public void login(String username) {
+		network.send(PacketCreator.login(username));
 	}
 
 	private void loadPrefs() {
@@ -531,6 +534,10 @@ public class Main {
 
 	public void playCard(int index, int rank, int id) {
 		sendPacket(PacketCreator.play(hand.get(index), rank, id));
+	}
+
+	public void setLoginSuccess(boolean success) {
+		loginDialog.setSuccess(success);
 	}
 
 	public static enum Sorting {

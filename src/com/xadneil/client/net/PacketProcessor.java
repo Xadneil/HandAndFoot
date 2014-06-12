@@ -3,7 +3,7 @@ package com.xadneil.client.net;
 import com.xadneil.client.net.handlers.*;
 
 /**
- * Class for assigning receive opcodes to packet handlers and storing and
+ * Class for assigning receive opcodes to packet handlers, storing, and
  * accessing packet handlers for use
  * 
  * @author Daniel
@@ -35,6 +35,7 @@ public class PacketProcessor {
 				new EndRequirementsHandler());
 		registerHandler(RecvOpcode.PLAY_OTHER, new OtherPlayHandler());
 		registerHandler(RecvOpcode.CLEAR, new ClearHandler());
+		registerHandler(RecvOpcode.LOGIN, new LoginHandler());
 	}
 
 	/**

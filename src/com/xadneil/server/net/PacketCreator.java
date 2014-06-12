@@ -126,4 +126,10 @@ public class PacketCreator {
 		ret.add(team);
 		return ret;
 	}
+
+	public static Packet login(boolean success) {
+		Packet ret = new Packet(SendOpcode.LOGIN);
+		ret.add(success);
+		return ret;
+	}
 }

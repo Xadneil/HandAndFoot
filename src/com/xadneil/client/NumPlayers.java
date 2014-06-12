@@ -79,5 +79,4 @@ public class NumPlayers extends JDialog {
 		}
 		pack();
 	}
-
 }
