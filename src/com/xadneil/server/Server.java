@@ -61,6 +61,9 @@ public class Server {
 	private PrintStream out = System.out;
 	private Discovery discovery;
 
+	/**
+	 * Class constructor
+	 */
 	public Server() {
 		discard = new ArrayList<>();
 		draw = new LinkedList<>();
@@ -72,6 +75,7 @@ public class Server {
 	 * Starts a round, shuffling and dealing cards, and sending start packets
 	 */
 	public void startRound() {
+		// clear round-dependent data
 		draw.clear();
 		discard.clear();
 		board.clear();
@@ -82,19 +86,23 @@ public class Server {
 		for (Player p : players) {
 			p.resetCards();
 		}
+		// create and shuffle draw pile
 		for (int i = 0; i < 5; i++) {
 			draw.addAll(new Deck());
 		}
 		Collections.shuffle(draw);
+		// extract hands and feet for all players
 		for (Player p : players) {
 			for (int i = 0; i < 11; i++) {
 				p.getFoot().add(draw.removeFirst());
 				p.getHand().add(draw.removeFirst());
 			}
 		}
+		// send players their starting hands
 		for (int i = 0; i < numPlayers; i++) {
 			send(PacketCreator.gameStart(players[i].getHand()), players[i]);
 		}
+		// do initial turn handling
 		send(PacketCreator.displayTurn(names[turn], true), players[0]);
 		sendExcept(PacketCreator.displayTurn(names[turn], false), players[0]);
 		send(PacketCreator.discardNotify(new Card(0, Suit.UNDEFINED)));
@@ -120,6 +128,9 @@ public class Server {
 		}
 	}
 
+	/**
+	 * Marks the current team as down (able to play any cards)
+	 */
 	public void goDown() {
 		down[turn % 2] = true;
 	}
@@ -265,6 +276,7 @@ public class Server {
 				// game will not start until all players send names (async)
 			}
 		}.start();
+		// start discovery server, where players can find local games
 		discovery = new Discovery();
 		new Thread(discovery, "Discovery").start();
 	}

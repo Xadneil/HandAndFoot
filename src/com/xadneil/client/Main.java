@@ -93,6 +93,9 @@ public class Main {
 		initializeEnemyBoard();
 	}
 
+	/**
+	 * Create the enemy board
+	 */
 	private void initializeEnemyBoard() {
 		enemyFrame = new JFrame();
 		enemyFrame.setTitle("Enemy Board");
@@ -374,6 +377,7 @@ public class Main {
 			@Override
 			public void done() {
 				try {
+					// when finished connecting and success, start login
 					if (get()) {
 						loginDialog = new Login(Main.this);
 						loginDialog.setVisible(true);
@@ -385,7 +389,11 @@ public class Main {
 		}.execute();
 	}
 
-	// from Surface
+	/**
+	 * Notifies the server of a discard
+	 * 
+	 * @param index
+	 */
 	public void discard(int index) {
 		if (!hasDrawn) {
 			JOptionPane.showMessageDialog(gameFrame, "You must draw first");
@@ -406,7 +414,10 @@ public class Main {
 		network.send(PacketCreator.discard(c));
 	}
 
-	// from handler
+	/**
+	 * Actually removes the discard from the hand. Only called after the server
+	 * confirms
+	 */
 	public void doDiscard() {
 		if (toDiscard != -1) {
 			hasDrawn = false;
@@ -415,6 +426,13 @@ public class Main {
 		}
 	}
 
+	/**
+	 * Deep copier for hand
+	 * 
+	 * @param toCopy
+	 *            the hand to copy
+	 * @return a copy of the hand
+	 */
 	public final List<Card> copyHand(List<Card> toCopy) {
 		List<Card> ret = new ArrayList<>();
 		for (Card c : toCopy) {
@@ -423,18 +441,35 @@ public class Main {
 		return ret;
 	}
 
+	/**
+	 * Ceases the surface's mouse interaction in the event of game disconnection
+	 */
 	public void killSurface() {
 		surface.setAlive(false);
 	}
 
+	/**
+	 * Sends the username to the server for human identification
+	 * 
+	 * @param username
+	 *            the username
+	 */
 	public void login(String username) {
 		network.send(PacketCreator.login(username));
 	}
 
+	/**
+	 * Loads card display preferences from local storage. Uses
+	 * java.util.prefs.Preferences at the <code>getClass()</code> node. <br>
+	 * Preferences are a byte array at key <code>SORTING</code>. The array
+	 * represents the ordinals of the <code>Sorting</code> enum from left to
+	 * right (4 values), followed by a boolean for ascending/descending
+	 */
 	private void loadPrefs() {
 		sorting = Preferences.userNodeForPackage(getClass()).getByteArray(
 				"SORTING", null);
 		if (sorting == null) {
+			// 0,1,2,3 left-to-right, 0 for ascending
 			sorting = new byte[] { 0, 1, 2, 3, 0 };
 			Preferences.userNodeForPackage(getClass()).putByteArray("SORTING",
 					sorting);
@@ -446,6 +481,13 @@ public class Main {
 		}
 	}
 
+	/**
+	 * Stores the sorting preferences on the local machine.
+	 * 
+	 * @see com.xadneil.client.Main#loadPrefs()
+	 * @param sorting
+	 *            the sorting preferences byte array
+	 */
 	public void storePrefs(byte[] sorting) {
 		Main.sorting = sorting;
 		Preferences.userNodeForPackage(getClass()).putByteArray("SORTING",
@@ -453,51 +495,110 @@ public class Main {
 		ascending = sorting[4] == 0;
 	}
 
+	/**
+	 * Gets the user's hand
+	 * 
+	 * @return
+	 */
 	public List<Card> getHand() {
 		return hand;
 	}
 
+	/**
+	 * Sets the card about to be played
+	 * 
+	 * @param c
+	 *            the card
+	 */
 	public void setPending(Card c) {
 		pending = c;
 	}
 
+	/**
+	 * Gets the card about to be played
+	 * 
+	 * @return the card about to be played
+	 */
 	public Card getPending() {
 		return pending;
 	}
 
+	/**
+	 * Gets the board of my team
+	 * 
+	 * @return my board
+	 */
 	public Map<Integer, ArrayList<Group>> getBoard() {
 		return board;
 	}
 
+	/**
+	 * Gets the board of the enemy team
+	 * 
+	 * @return enemy's board
+	 */
 	public Map<Integer, ArrayList<Group>> getEnemyBoard() {
 		return enemyBoard.getBoard();
 	}
 
+	/**
+	 * Sets the card currently on top of the discard pile
+	 * 
+	 * @param c
+	 *            the top discard
+	 */
 	public void setDiscard(Card c) {
 		discard = c;
 	}
 
+	/**
+	 * Gets the card currently on top of the discard pile
+	 * 
+	 * @return the card currently on top of the discard pile
+	 */
 	public Card getDiscard() {
 		return discard;
 	}
 
+	/**
+	 * Resets the game for joining a different game
+	 */
 	public void reset() {
 		board.clear();
 		hand.clear();
+		discard = null;
+		staging = null;
+		toDiscard = -1;
+		pending = null;
+		redraw();
 		close();
+		setButtons(false);
 	}
 
+	/**
+	 * Updates the playing surface to draw board information
+	 */
 	public void redraw() {
 		surface.repaint();
 		enemyFrame.repaint();
 	}
 
+	/**
+	 * Closes the network connection
+	 */
 	public void close() {
 		if (network != null) {
 			network.close();
+			network = null;
 		}
 	}
 
+	/**
+	 * Sends a packet to the server
+	 * 
+	 * @param p
+	 *            the packet
+	 */
 	public void sendPacket(Packet p) {
 		try {
 			network.getSocket().getOutputStream().write(p.toByteArray());
@@ -505,41 +606,99 @@ public class Main {
 		}
 	}
 
+	/**
+	 * Exits the game
+	 */
 	private void exit() {
 		close();
 		System.exit(0);
 	}
 
-	public void setTurn(String playerName) {
+	/**
+	 * Sets the name of the currently playing player to be displayed in the
+	 * status bar
+	 * 
+	 * @param playerName
+	 *            the current player name
+	 */
+	public void setTurnName(String playerName) {
 		surface.setTurnName(playerName);
 	}
 
+	/**
+	 * Sets the current round number to be displayed in the status bar
+	 * 
+	 * @param round
+	 *            the current round
+	 */
 	public void setRound(int round) {
 		surface.setRound(round);
 	}
 
+	/**
+	 * Sets the given group as the staging area, displayed on the left. The
+	 * staging area is where players build groups to be played.
+	 * 
+	 * @param group
+	 *            the group to be staged
+	 */
 	public void setStaging(Group group) {
 		staging = group;
 	}
 
+	/**
+	 * Gets the current staging group.
+	 * 
+	 * @see com.xadneil.client.Main#setStaging(Group)
+	 * @return the current staging group
+	 */
 	public Group getStaging() {
 		return staging;
 	}
 
+	/**
+	 * Sets the drawing buttons to be enabled or disabled
+	 * 
+	 * @param enabled
+	 *            enabled or disabled
+	 */
 	public void setButtons(boolean enabled) {
 		btnDraw2Cards.setEnabled(enabled);
 		btnDraw7Cards.setEnabled(enabled);
 		hasDrawn = !enabled;
 	}
 
+	/**
+	 * Sends a play card command to the server
+	 * 
+	 * @param index
+	 *            the index in my hand of the card to play
+	 * @param rank
+	 *            the rank of the group to play on
+	 * @param id
+	 *            the id of the group to play on
+	 */
 	public void playCard(int index, int rank, int id) {
 		sendPacket(PacketCreator.play(hand.get(index), rank, id));
 	}
 
+	/**
+	 * Reports login success or failure to the login dialog
+	 * 
+	 * @param success
+	 *            success or failure
+	 */
 	public void setLoginSuccess(boolean success) {
 		loginDialog.setSuccess(success);
 	}
 
+	/**
+	 * Sorting setup. Ordinal is used as preference data, <code>order</code> is
+	 * used as ordering number.
+	 * 
+	 * @see com.xadneil.client.Card#compareTo(Card)
+	 * @author Daniel
+	 */
 	public static enum Sorting {
 		RED3S("Red 3s"),
 		BLACK3S("Black 3s"),

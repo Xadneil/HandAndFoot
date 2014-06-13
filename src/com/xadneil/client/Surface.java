@@ -90,7 +90,8 @@ public final class Surface extends JPanel implements MouseMotionListener,
 	 */
 	public Surface() {
 		if (!Beans.isDesignTime())
-			throw new RuntimeException("Illegal Surface constructor. Use \"new Surface(Main game)\" instead.");
+			throw new RuntimeException(
+					"Illegal Surface constructor. Use \"new Surface(Main game)\" instead.");
 	}
 
 	/**
@@ -352,8 +353,19 @@ public final class Surface extends JPanel implements MouseMotionListener,
 					}
 					int id = temp.get(index).getValue().id;
 					int rank = temp.get(index).getValue().rank;
-					game.setPending(game.getHand().get(floatingIndex));
-					game.playCard(floatingIndex, rank, id);
+					Card c = game.getHand().get(floatingIndex);
+					Pair p = temp.get(index).getValue();
+					Group g = game.getBoard().get(p.rank).get(p.id);
+					boolean ok;
+					if (g.getCards().size() <= 6)
+						ok = true;
+					// cannot play wild on completed group
+					else
+						ok = g.isClean() && !c.isWild();
+					if (ok) {
+						game.setPending(c);
+						game.playCard(floatingIndex, rank, id);
+					}
 				} else if (mouseX < borderSize + cardWidth + boardSeparation
 						/ 2
 						&& mouseY < (int) (borderSize * 1.5) + cardHeight) {

@@ -12,7 +12,7 @@ public class DisplayTurnHandler implements PacketHandler {
 
 	@Override
 	public void handlePacket(Packet packet, Socket s, Main game) {
-		game.setTurn(packet.getString());
+		game.setTurnName(packet.getString());
 		if (packet.getBoolean()) { // my turn
 			JOptionPane.showMessageDialog(game.gameFrame, "It is your turn now.");
 	        game.setButtons(true);

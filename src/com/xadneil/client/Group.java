@@ -4,12 +4,23 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * A list of cards that satisfy either rank or wildness. A valid group must
+ * consist of at least three cards. All natural (non-wild) cards must be of the
+ * same rank. The number of wild cards, if any, must be less than the number of
+ * naturals. If a Group contains any wild cards, it is considered "dirty",
+ * otherwise it is "clean". Dirty groups can contain a maximum of seven cards.
+ * Clean groups can hold unlimited cards. //TODO finish
+ * 
+ * @author Daniel
+ * 
+ */
 public class Group implements Iterable<Card> {
 
 	private List<Card> cards;
 	private Card coverCard;
 	private boolean clean = true;
-	private int rank;
+	private final int rank;
 	private int id;
 
 	public Group(int rank, int id) {
@@ -20,7 +31,9 @@ public class Group implements Iterable<Card> {
 
 	/**
 	 * Copy Constructor
-	 * @param toCopy the group to copy
+	 * 
+	 * @param toCopy
+	 *            the group to copy
 	 */
 	public Group(Group toCopy) {
 		this.rank = toCopy.rank;
