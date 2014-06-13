@@ -15,6 +15,11 @@ import java.util.Random;
 
 import javax.swing.JPanel;
 
+/**
+ * JPanel for displaying the enemy board
+ * 
+ * @author Daniel
+ */
 @SuppressWarnings("serial")
 public class EnemyBoard extends JPanel implements ComponentListener {
 
@@ -34,8 +39,12 @@ public class EnemyBoard extends JPanel implements ComponentListener {
 	private int w, h;
 	private Map<Integer, ArrayList<Group>> board = new HashMap<>();
 
+	/**
+	 * Class Constructor
+	 */
 	public EnemyBoard() {
 		super();
+		addComponentListener(this);
 	}
 
 	@Override

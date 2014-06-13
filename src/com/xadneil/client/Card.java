@@ -8,9 +8,9 @@ package com.xadneil.client;
 public class Card implements Comparable<Card> {
 
 	private String name;
-	private Suit suit = Suit.UNDEFINED;
-	private int points;
-	private int rank;
+	private final Suit suit;
+	private final int points;
+	private final int rank;
 
 	/**
 	 * Card Constructor
@@ -76,6 +76,8 @@ public class Card implements Comparable<Card> {
 			break;
 		case 14:
 			this.points = 50;
+		default:
+			throw new RuntimeException();
 		}
 	}
 
@@ -111,10 +113,20 @@ public class Card implements Comparable<Card> {
 		return card.getSuit() == suit && card.getRank() == rank;
 	}
 
+	/**
+	 * Gets the suit of the card
+	 * 
+	 * @return the suit
+	 */
 	public Suit getSuit() {
 		return suit;
 	}
 
+	/**
+	 * Gets the rank of the card
+	 * 
+	 * @return the rank
+	 */
 	public int getRank() {
 		return rank;
 	}
@@ -128,6 +140,11 @@ public class Card implements Comparable<Card> {
 		return name;
 	}
 
+	/**
+	 * Gets the points of the card.
+	 * 
+	 * @return the points
+	 */
 	public int getPoints() {
 		return points;
 	}
@@ -135,7 +152,7 @@ public class Card implements Comparable<Card> {
 	/**
 	 * Gets whether or not the card is wild. 2s and jokers are wild.
 	 * 
-	 * @return wild
+	 * @return wild wild
 	 */
 	public boolean isWild() {
 		return rank == 14 || rank == 2;
@@ -144,7 +161,7 @@ public class Card implements Comparable<Card> {
 	/**
 	 * Gets the sorting group for the card
 	 * 
-	 * @return
+	 * @return the sorting group
 	 */
 	public Main.Sorting getSorting() {
 		if (rank == 3) {

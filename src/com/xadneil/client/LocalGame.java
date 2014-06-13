@@ -17,8 +17,12 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import com.xadneil.client.net.Discovery;
-import com.xadneil.client.net.Discovery.GameDetails;
 
+/**
+ * A JDialog for searching for, displaying, and selecting a local game.
+ * 
+ * @author Daniel
+ */
 @SuppressWarnings("serial")
 public class LocalGame extends JDialog {
 
@@ -103,12 +107,21 @@ public class LocalGame extends JDialog {
 		Discovery.run(this);
 	}
 
+	/**
+	 * Joins the selected game
+	 */
 	private void joinGame() {
 		game.connect(list.getSelectedValue());
 		dispose();
 	}
 
-	public void setGames(final List<GameDetails> games) {
+	/**
+	 * Display the resulting games in a JList
+	 * 
+	 * @param games
+	 *            the games
+	 */
+	public void setGames(final List<Discovery.GameDetails> games) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				lblLoading.setText("");

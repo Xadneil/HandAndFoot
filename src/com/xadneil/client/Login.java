@@ -1,31 +1,38 @@
 package com.xadneil.client;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
-import javax.swing.BoxLayout;
 
+/**
+ * A simple JDialog for sending a nickname to the server.
+ * 
+ * @author Daniel
+ */
 @SuppressWarnings("serial")
 public class Login extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
-	private JTextField textField;
+	private JTextField nameField;
 	private JLabel lblError;
 
 	/**
 	 * Create the dialog.
 	 */
 	public Login(final Main game) {
-		setTitle("Login");
-		setBounds(100, 100, 450, 150);
+		super(game.gameFrame, "Login", true);
+		setLocationRelativeTo(game.gameFrame);
+		setPreferredSize(new Dimension(250, 150));
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -38,9 +45,9 @@ public class Login extends JDialog {
 				panel.add(lblUsername);
 			}
 			{
-				textField = new JTextField();
-				panel.add(textField);
-				textField.setColumns(15);
+				nameField = new JTextField();
+				panel.add(nameField);
+				nameField.setColumns(15);
 			}
 		}
 		{
@@ -55,7 +62,7 @@ public class Login extends JDialog {
 				JButton okButton = new JButton("OK");
 				okButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						game.login(textField.getText());
+						game.login(nameField.getText());
 					}
 				});
 				okButton.setActionCommand("OK");
@@ -73,8 +80,16 @@ public class Login extends JDialog {
 				buttonPane.add(cancelButton);
 			}
 		}
+		pack();
 	}
 
+	/**
+	 * Sets the success of the name selection. If successful, exit. Otherwise,
+	 * display a message.
+	 * 
+	 * @param success
+	 *            success or failure
+	 */
 	public void setSuccess(boolean success) {
 		if (success) {
 			dispose();

@@ -17,6 +17,11 @@ import javax.swing.JRadioButton;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 
+/**
+ * A JDialog for adjusting the card sorting style.
+ * 
+ * @author Daniel
+ */
 @SuppressWarnings("serial")
 public class CustomSort extends JDialog {
 
@@ -30,6 +35,9 @@ public class CustomSort extends JDialog {
 	 * Create the dialog.
 	 * 
 	 * @param main
+	 *            a reference to the game
+	 * @param values
+	 *            the initial ordering to display
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public CustomSort(final Main main, final String[] values) {
@@ -59,6 +67,9 @@ public class CustomSort extends JDialog {
 				JButton okButton = new JButton("OK");
 				okButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
+						// sets the order of the Sorting enum based on the order
+						// of the strings in the list. Pretty inefficient, but
+						// is small enough not to matter.
 						byte[] ret = new byte[5];
 						for (byte i = 0; i < 4; i++) {
 							String current = (String) list.getModel()

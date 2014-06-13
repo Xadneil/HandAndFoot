@@ -43,6 +43,12 @@ import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.TransferHandler;
 
+/**
+ * Class for support of dragging elements around on a JList.
+ * 
+ * @author Oracle
+ * @author Daniel
+ */
 @SuppressWarnings("serial")
 public class DragHandler extends TransferHandler {
 	private int indices = -1;

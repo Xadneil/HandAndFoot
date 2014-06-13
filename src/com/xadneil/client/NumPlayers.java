@@ -16,7 +16,7 @@ import javax.swing.JRadioButton;
 import com.xadneil.server.Server;
 
 /**
- * A JDialog to select the number of players for an integrated server
+ * A JDialog for selecting the number of players for an integrated server
  * 
  * @author Daniel
  */
@@ -29,8 +29,7 @@ public class NumPlayers extends JDialog {
 	 * Create the dialog.
 	 */
 	public NumPlayers(final Main game) {
-		super(game.gameFrame, true);
-		setTitle("Number of Players");
+		super(game.gameFrame, "Number of Players", true);
 		setPreferredSize(new Dimension(200, 130));
 		setLocationRelativeTo(game.gameFrame);
 		{
