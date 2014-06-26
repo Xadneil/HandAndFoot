@@ -76,8 +76,9 @@ public class Card implements Comparable<Card> {
 			break;
 		case 14:
 			this.points = 50;
+			break;
 		default:
-			throw new RuntimeException();
+			throw new RuntimeException("Invalid rank " + rank);
 		}
 	}
 
