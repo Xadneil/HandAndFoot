@@ -94,7 +94,7 @@ public class Network extends Thread {
 		new Thread(packet.getOpcode() + " processor") {
 			@Override
 			public void run() {
-				PacketHandler h = PacketProcessor.getProcessor().getHandler(
+				PacketHandler h = PacketProcessor.instance().getHandler(
 						packet.getOpcode());
 				if (h != null)
 					h.handlePacket(packet, s, game);

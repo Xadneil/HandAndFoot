@@ -10,6 +10,11 @@ import com.xadneil.client.Suit;
 import com.xadneil.client.net.Packet;
 import com.xadneil.server.Server;
 
+/**
+ * Factory class for creating packets
+ * 
+ * @author Daniel
+ */
 public class PacketCreator {
 
 	public static Packet draw(Card c1, Card c2) {

@@ -2,6 +2,11 @@ package com.xadneil.server.net;
 
 import com.xadneil.client.net.Opcode;
 
+/**
+ * Opcodes that are sent by the server and received by the client
+ * 
+ * @author Daniel
+ */
 public enum SendOpcode implements Opcode {
 
 	DRAW(0),

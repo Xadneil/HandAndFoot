@@ -495,12 +495,7 @@ public class Server {
 	 *            the player
 	 */
 	private void send(Packet p, Player player) {
-		try {
-			player.getSocket().getSocket().getOutputStream()
-					.write(p.toByteArray());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		player.send(p);
 	}
 
 	/**
@@ -576,6 +571,14 @@ public class Server {
 		return instance;
 	}
 
+	/**
+	 * Main method for command-line server invocation. Optional argument: a
+	 * positive, even integer for number of players, must be 4 or 6 for standard
+	 * play.
+	 * 
+	 * @param args
+	 *            the command line arguments
+	 */
 	public static void main(String[] args) {
 		int numPlayers;
 		if (args.length > 0) {

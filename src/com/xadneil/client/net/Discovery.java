@@ -11,6 +11,11 @@ import java.util.List;
 
 import com.xadneil.client.LocalGame;
 
+/**
+ * A class for multicasting a discovery UDP packet and organizing responses
+ * 
+ * @author Daniel
+ */
 public class Discovery {
 	private static final int DISCOVERY = 17246;
 
@@ -19,6 +24,7 @@ public class Discovery {
 			@Override
 			public void run() {
 				DatagramSocket socket = null;
+				// discovery packet has this request
 				byte[] data = "HF_DISCOVERY_REQUEST".getBytes();
 				DatagramPacket packet;
 				try {
@@ -48,6 +54,8 @@ public class Discovery {
 					while (true) {
 						socket.receive(receive);
 						String message = new String(receive.getData()).trim();
+						// response format:
+						// "HF_DISCOVERY_RESPONSE 12345 Game description"
 						if (message.startsWith("HF_DISCOVERY_RESPONSE")) {
 							String sPort = message.substring(message
 									.indexOf(' ') + 1);
@@ -72,6 +80,11 @@ public class Discovery {
 		}.start();
 	}
 
+	/**
+	 * Class for details in connecting to a local server
+	 * 
+	 * @author Daniel
+	 */
 	public static class GameDetails {
 		public InetAddress address;
 		public int port;

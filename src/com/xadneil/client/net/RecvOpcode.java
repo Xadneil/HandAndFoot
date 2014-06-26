@@ -1,5 +1,10 @@
 package com.xadneil.client.net;
 
+/**
+ * Opcodes that are sent by the server and received by the client
+ * 
+ * @author Daniel
+ */
 public enum RecvOpcode implements Opcode {
 
 	DRAW(0),

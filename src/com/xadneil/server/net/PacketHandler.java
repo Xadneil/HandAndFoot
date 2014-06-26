@@ -3,7 +3,20 @@ package com.xadneil.server.net;
 import com.xadneil.client.net.Packet;
 import com.xadneil.server.Player;
 
+/**
+ * Class for handling a received packet
+ * 
+ * @author Daniel
+ */
 public interface PacketHandler {
 
-    public void handlePacket(Packet packet, Player player);
+	/**
+	 * Handles a packet
+	 * 
+	 * @param packet
+	 *            the packet to handle
+	 * @param player
+	 *            the player that the packet came from
+	 */
+	public void handlePacket(Packet packet, Player player);
 }

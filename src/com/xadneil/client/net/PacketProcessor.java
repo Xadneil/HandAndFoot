@@ -3,7 +3,7 @@ package com.xadneil.client.net;
 import com.xadneil.client.net.handlers.*;
 
 /**
- * Class for assigning receive opcodes to packet handlers, storing, and
+ * Class for assigning receive opcodes to packet handlers and storing and
  * accessing packet handlers for use
  * 
  * @author Daniel
@@ -14,6 +14,8 @@ public class PacketProcessor {
 	private PacketHandler[] handlers;
 
 	private PacketProcessor() {
+		// finds max opcode value from RecvOpcode.
+		// this is done to eliminate any ordering requirements.
 		int maxRecvOp = 0;
 		for (RecvOpcode op : RecvOpcode.values()) {
 			if (op.getValue() > maxRecvOp) {
@@ -21,21 +23,22 @@ public class PacketProcessor {
 			}
 		}
 		handlers = new PacketHandler[maxRecvOp + 1];
-		registerHandler(RecvOpcode.DRAW, new DrawHandler());
-		registerHandler(RecvOpcode.DISCARD, new DiscardHandler());
-		registerHandler(RecvOpcode.WRONG_TURN, new WrongTurnHandler());
-		registerHandler(RecvOpcode.DRAW7, new Draw7Handler());
-		registerHandler(RecvOpcode.GAME_START, new GameStartHandler());
-		registerHandler(RecvOpcode.YOUR_TURN, new YourTurnHandler());
-		registerHandler(RecvOpcode.DISPLAY_TURN, new DisplayTurnHandler());
-		registerHandler(RecvOpcode.PLAY, new PlayHandler());
-		registerHandler(RecvOpcode.POINTS, new PointsHandler());
-		registerHandler(RecvOpcode.END_ROUND, new EndRoundHandler());
-		registerHandler(RecvOpcode.END_REQUIREMENTS,
-				new EndRequirementsHandler());
-		registerHandler(RecvOpcode.PLAY_OTHER, new OtherPlayHandler());
-		registerHandler(RecvOpcode.CLEAR, new ClearHandler());
-		registerHandler(RecvOpcode.LOGIN, new LoginHandler());
+
+		// register all handlers
+		register(RecvOpcode.DRAW, new DrawHandler());
+		register(RecvOpcode.DISCARD, new DiscardHandler());
+		register(RecvOpcode.WRONG_TURN, new WrongTurnHandler());
+		register(RecvOpcode.DRAW7, new Draw7Handler());
+		register(RecvOpcode.GAME_START, new GameStartHandler());
+		register(RecvOpcode.YOUR_TURN, new YourTurnHandler());
+		register(RecvOpcode.DISPLAY_TURN, new DisplayTurnHandler());
+		register(RecvOpcode.PLAY, new PlayHandler());
+		register(RecvOpcode.POINTS, new PointsHandler());
+		register(RecvOpcode.END_ROUND, new EndRoundHandler());
+		register(RecvOpcode.END_REQUIREMENTS, new EndRequirementsHandler());
+		register(RecvOpcode.PLAY_OTHER, new OtherPlayHandler());
+		register(RecvOpcode.CLEAR, new ClearHandler());
+		register(RecvOpcode.LOGIN, new LoginHandler());
 	}
 
 	/**
@@ -49,14 +52,10 @@ public class PacketProcessor {
 		if (opcode > handlers.length) {
 			return null;
 		}
-		PacketHandler handler = handlers[opcode];
-		if (handler != null) {
-			return handler;
-		}
-		return null;
+		return handlers[opcode];
 	}
 
-	private void registerHandler(RecvOpcode code, PacketHandler handler) {
+	private void register(RecvOpcode code, PacketHandler handler) {
 		try {
 			handlers[code.getValue()] = handler;
 		} catch (ArrayIndexOutOfBoundsException e) {
@@ -65,7 +64,12 @@ public class PacketProcessor {
 		}
 	}
 
-	public synchronized static PacketProcessor getProcessor() {
+	/**
+	 * Access the singleton packet processor
+	 * 
+	 * @return the packet processor
+	 */
+	public synchronized static PacketProcessor instance() {
 		if (instance == null) {
 			instance = new PacketProcessor();
 		}

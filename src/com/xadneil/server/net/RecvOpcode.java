@@ -2,6 +2,11 @@ package com.xadneil.server.net;
 
 import com.xadneil.client.net.Opcode;
 
+/**
+ * Opcodes that are sent by the client and received by the server
+ * 
+ * @author Daniel
+ */
 public enum RecvOpcode implements Opcode {
 
 	DRAW(0),
