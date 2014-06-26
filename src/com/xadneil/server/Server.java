@@ -100,12 +100,12 @@ public class Server {
 		}
 		// send players their starting hands
 		for (int i = 0; i < numPlayers; i++) {
-			send(PacketCreator.gameStart(players[i].getHand()), players[i]);
+			players[i].send(PacketCreator.gameStart(players[i].getHand()));
 		}
 		// do initial turn handling
-		send(PacketCreator.displayTurn(names[turn], true), players[0]);
+		players[0].send(PacketCreator.displayTurn(names[turn], true));
 		sendExcept(PacketCreator.displayTurn(names[turn], false), players[0]);
-		send(PacketCreator.discardNotify(new Card(0, Suit.UNDEFINED)));
+		sendAll(PacketCreator.discardNotify(new Card(0, Suit.UNDEFINED)));
 	}
 
 	/**
@@ -298,7 +298,7 @@ public class Server {
 		Card c2 = draw.removeFirst();
 		players[turn].getHand().add(c1);
 		players[turn].getHand().add(c2);
-		send(PacketCreator.draw(c1, c2), players[turn]);
+		players[turn].send(PacketCreator.draw(c1, c2));
 	}
 
 	/**
@@ -309,7 +309,7 @@ public class Server {
 		if (turn >= numPlayers) {
 			turn = 0;
 		}
-		send(PacketCreator.displayTurn(names[turn], true), players[turn]);
+		players[turn].send(PacketCreator.displayTurn(names[turn], true));
 		sendExcept(PacketCreator.displayTurn(names[turn], false), players[turn]);
 	}
 
@@ -354,7 +354,7 @@ public class Server {
 		// remove card from hand
 		if (players[turn].getHand().remove(card)) {
 			discard.add(card);
-			send(PacketCreator.discardNotify(card));
+			sendAll(PacketCreator.discardNotify(card));
 		} else {
 			out.println("Discard Error. Card " + card
 					+ " was not in player's hand.");
@@ -376,7 +376,7 @@ public class Server {
 					// round + 1 for human readable
 					packet = PacketCreator.endRound(team ? score[0] : score[1],
 							team ? score[1] : score[0], round + 1);
-					send(packet, p);
+					p.send(packet);
 				}
 				new Thread() {
 					@Override
@@ -402,8 +402,8 @@ public class Server {
 		if (!players[turn].isInFoot() && players[turn].getHand().isEmpty()) {
 			players[turn].setInFoot();
 			// send player new hand
-			send(PacketCreator.gameStart(players[turn].getHand()),
-					players[turn]);
+			players[turn]
+					.send(PacketCreator.gameStart(players[turn].getHand()));
 		}
 	}
 
@@ -414,7 +414,7 @@ public class Server {
 	 */
 	public void pickUpDiscard() {
 		if (discard.size() < 7) {
-			send(PacketCreator.draw7(null), players[turn]);
+			players[turn].send(PacketCreator.draw7(null));
 			return;
 		}
 		int numCards = 0;
@@ -428,7 +428,7 @@ public class Server {
 			}
 		}
 		if (numCards < 2) {
-			send(PacketCreator.draw7(null), players[turn]);
+			players[turn].send(PacketCreator.draw7(null));
 			return;
 		}
 		Card[] ret = new Card[7];
@@ -438,11 +438,11 @@ public class Server {
 			players[turn].getHand().add(temp);
 		}
 
-		send(PacketCreator.draw7(ret), players[turn]);
+		players[turn].send(PacketCreator.draw7(ret));
 		if (discard.isEmpty())
-			send(PacketCreator.discardNotify(new Card(0, Suit.UNDEFINED)));
+			sendAll(PacketCreator.discardNotify(new Card(0, Suit.UNDEFINED)));
 		else
-			send(PacketCreator.discardNotify(discard.get(discard.size() - 1)));
+			sendAll(PacketCreator.discardNotify(discard.get(discard.size() - 1)));
 	}
 
 	/**
@@ -459,17 +459,15 @@ public class Server {
 				ret += g.getScore();
 			}
 		}
-		for (Card c : players[team].getFoot()) {
-			ret -= c.getPoints();
-		}
-		for (Card c : players[team].getHand()) {
-			ret -= c.getPoints();
-		}
-		for (Card c : players[team + 2].getFoot()) {
-			ret -= c.getPoints();
-		}
-		for (Card c : players[team + 2].getHand()) {
-			ret -= c.getPoints();
+		for (int i = 0; i < numPlayers; i++) {
+			if (i % 2 != team)
+				continue;
+			for (Card c : players[i].getFoot()) {
+				ret -= c.getPoints();
+			}
+			for (Card c : players[i].getHand()) {
+				ret -= c.getPoints();
+			}
 		}
 		return ret;
 	}
@@ -480,22 +478,10 @@ public class Server {
 	 * @param p
 	 *            the packet
 	 */
-	public void send(Packet p) {
+	public void sendAll(Packet p) {
 		for (Player player : players) {
-			send(p, player);
+			player.send(p);
 		}
-	}
-
-	/**
-	 * Sends a packet to a player
-	 * 
-	 * @param p
-	 *            the packet
-	 * @param player
-	 *            the player
-	 */
-	private void send(Packet p, Player player) {
-		player.send(p);
 	}
 
 	/**
@@ -509,7 +495,7 @@ public class Server {
 	public void sendExcept(Packet p, Player player) {
 		for (Player currPlayer : players) {
 			if (currPlayer != player)
-				send(p, currPlayer);
+				currPlayer.send(p);
 		}
 	}
 
@@ -526,8 +512,8 @@ public class Server {
 	public void playOthers(Card c, int rank, int id) {
 		for (Player p : players) {
 			if (p.getNumber() != turn) {
-				send(PacketCreator.playOtherCard(p.getNumber() % 2 == turn % 2,
-						c, rank, id), p);
+				p.send(PacketCreator.playOtherCard(
+						p.getNumber() % 2 == turn % 2, c, rank, id));
 			}
 		}
 	}
@@ -541,8 +527,8 @@ public class Server {
 	public void playOthers(Group g) {
 		for (Player p : players) {
 			if (p.getNumber() != turn) {
-				send(PacketCreator.playOtherGroup(
-						p.getNumber() % 2 == turn % 2, g), p);
+				p.send(PacketCreator.playOtherGroup(
+						p.getNumber() % 2 == turn % 2, g));
 			}
 		}
 	}
@@ -555,7 +541,7 @@ public class Server {
 	public void clearBoard(int team) {
 		board.get(team).clear();
 		for (Player player : players) {
-			send(PacketCreator.clear(player.getNumber() % 2 == team), player);
+			player.send(PacketCreator.clear(player.getNumber() % 2 == team));
 		}
 	}
 
