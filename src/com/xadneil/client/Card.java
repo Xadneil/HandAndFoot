@@ -53,6 +53,10 @@ public class Card implements Comparable<Card> {
 		}
 		this.name += suit.myName;
 		switch (rank) {
+		case 0:
+			// discard blank placeholder
+			this.points = 0;
+			break;
 		case 1:
 		case 2:
 			this.points = 20;

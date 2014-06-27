@@ -21,6 +21,7 @@ public class PlayHandler implements PacketHandler {
 			if (isCard) {
 				int id = packet.getInt();
 				Card c = game.getPending();
+				//debug
 				Group.Result res = game.getBoard().get(c.getRank()).get(id)
 						.addCards(Arrays.asList(c));
 				if (res != Group.Result.SUCCESS) {

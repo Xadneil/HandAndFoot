@@ -11,13 +11,17 @@ import com.xadneil.server.Player;
 import com.xadneil.server.Server;
 import com.xadneil.server.net.PacketCreator;
 import com.xadneil.server.net.PacketHandler;
+import com.xadneil.server.net.SendOpcode;
 
 public class PlayCardHandler implements PacketHandler {
 
 	@Override
 	public void handlePacket(Packet packet, Player player) {
+		if (player.getNumber() != Server.getInstance().getTurn()) {
+			player.send(new Packet(SendOpcode.WRONG_TURN));
+		}
 		int id = packet.getInt();
-		int rank = packet.getInt(); //TODO
+		int rank = packet.getInt();
 		Card c = packet.getCard();
 
 		if (player.isInFoot() && player.getHand().size() == 2) {
