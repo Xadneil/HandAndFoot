@@ -1,6 +1,12 @@
 package com.xadneil.server.net;
 
-import com.xadneil.server.net.handlers.*;
+import com.xadneil.server.net.handlers.DiscardHandler;
+import com.xadneil.server.net.handlers.Draw7Handler;
+import com.xadneil.server.net.handlers.DrawHandler;
+import com.xadneil.server.net.handlers.LoginHandler;
+import com.xadneil.server.net.handlers.PlayCardHandler;
+import com.xadneil.server.net.handlers.PlayGroupHandler;
+import com.xadneil.server.net.handlers.PointsHandler;
 
 /**
  * Class for assigning receive opcodes to packet handlers and storing and

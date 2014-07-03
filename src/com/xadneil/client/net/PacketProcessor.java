@@ -1,6 +1,19 @@
 package com.xadneil.client.net;
 
-import com.xadneil.client.net.handlers.*;
+import com.xadneil.client.net.handlers.ClearHandler;
+import com.xadneil.client.net.handlers.DiscardHandler;
+import com.xadneil.client.net.handlers.DisplayTurnHandler;
+import com.xadneil.client.net.handlers.Draw7Handler;
+import com.xadneil.client.net.handlers.DrawHandler;
+import com.xadneil.client.net.handlers.EndRequirementsHandler;
+import com.xadneil.client.net.handlers.EndRoundHandler;
+import com.xadneil.client.net.handlers.GameStartHandler;
+import com.xadneil.client.net.handlers.LoginHandler;
+import com.xadneil.client.net.handlers.OtherPlayHandler;
+import com.xadneil.client.net.handlers.PlayHandler;
+import com.xadneil.client.net.handlers.PointsHandler;
+import com.xadneil.client.net.handlers.WrongTurnHandler;
+import com.xadneil.client.net.handlers.YourTurnHandler;
 
 /**
  * Class for assigning receive opcodes to packet handlers and storing and

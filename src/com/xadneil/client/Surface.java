@@ -12,7 +12,12 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.beans.Beans;
-import java.io.IOException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -23,9 +28,14 @@ import java.util.Random;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+
+import org.apache.batik.transcoder.TranscoderException;
+import org.apache.batik.transcoder.TranscoderInput;
+import org.apache.batik.transcoder.TranscoderOutput;
+import org.apache.batik.transcoder.image.ImageTranscoder;
+import org.apache.batik.transcoder.image.PNGTranscoder;
 
 import com.xadneil.client.Group.Result;
 
@@ -48,8 +58,8 @@ public final class Surface extends JPanel implements MouseMotionListener,
 	 */
 	private final int verticalStagger = 25;
 
-	private final int cardWidth = 73;
-	private final int cardHeight = 97;
+	private static int cardWidth = 73;
+	private static int cardHeight = 97;
 
 	private final int boardSeparation = 6;
 	private final int horizEdgeToEdge = cardWidth + boardSeparation;
@@ -109,35 +119,98 @@ public final class Surface extends JPanel implements MouseMotionListener,
 	}
 
 	/**
+	 * Class for getting BufferedImages from svg files
+	 * 
+	 * @author bbgen.net
+	 */
+	static class BufferedImageTranscoder extends ImageTranscoder {
+		@Override
+		public BufferedImage createImage(int w, int h) {
+			BufferedImage bi = new BufferedImage(w, h,
+					BufferedImage.TYPE_INT_ARGB);
+			return bi;
+		}
+
+		@Override
+		public void writeImage(BufferedImage img, TranscoderOutput output) {
+			this.img = img;
+		}
+
+		public BufferedImage getBufferedImage() {
+			return img;
+		}
+
+		private BufferedImage img = null;
+	}
+
+	/**
+	 * Constructs a BufferedImage from an svg file
+	 * 
+	 * @author bbgen.net
+	 * @author Daniel
+	 * @param svgURL
+	 *            URL to file
+	 * @param width
+	 *            desired image width
+	 * @param height
+	 *            desired image height
+	 * @return the image
+	 */
+	private static BufferedImage loadImage(URL svgURL, float width, float height) {
+		BufferedImageTranscoder imageTranscoder = new BufferedImageTranscoder();
+		FileInputStream svgStream;
+		try {
+			URI svgURI = svgURL.toURI();
+			File svgFile = new File(svgURI);
+			svgStream = new FileInputStream(svgFile);
+		} catch (FileNotFoundException | URISyntaxException e1) {
+			e1.printStackTrace();
+			System.exit(1);
+			return null;
+		}
+
+		imageTranscoder.addTranscodingHint(PNGTranscoder.KEY_WIDTH, width);
+		imageTranscoder.addTranscodingHint(PNGTranscoder.KEY_HEIGHT, height);
+
+		TranscoderInput input;
+		try {
+			input = new TranscoderInput(svgStream);
+			imageTranscoder.transcode(input, null);
+		} catch (TranscoderException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+		return imageTranscoder.getBufferedImage();
+	}
+
+	/**
 	 * Reads the game images from their files and stores them in
 	 * <code>imageBuffer</code>
 	 */
-	public static void loadImages() {
+	public static void loadImages(int width, int height) {
 		Card card;
+		cardWidth = width;
+		cardHeight = height;
 		for (Suit s : Suit.values()) {
 			if (s != Suit.UNDEFINED) {
 				for (int i = 1; i <= 13; i++) {
 					card = new Card(i, s);
-					try {
-						imageBuffer.put(card, ImageIO.read(Main.class
-								.getResource("/com/xadneil/images/"
-										+ card.getName() + ".gif")));
-					} catch (IOException ex) {
-						ex.printStackTrace();
-						System.exit(0);
-					}
+					imageBuffer.put(
+							card,
+							loadImage(Main.class
+									.getResource("/com/xadneil/images/"
+											+ card.getName() + ".svg"), width,
+									height));
 				}
 			} else {
 				for (int i = 0; i < 2; i++) {
 					card = new Card(14, s);
-					try {
-						imageBuffer.put(card, ImageIO.read(Main.class
-								.getResource("/com/xadneil/images/"
-										+ card.getName() + ".gif")));
-					} catch (IOException ex) {
-						ex.printStackTrace();
-						System.exit(0);
-					}
+					imageBuffer.put(
+							card,
+							loadImage(Main.class
+									.getResource("/com/xadneil/images/"
+											+ card.getName() + ".svg"), width,
+									height));
 				}
 			}
 		}

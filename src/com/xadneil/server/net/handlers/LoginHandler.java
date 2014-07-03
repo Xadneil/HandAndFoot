@@ -1,9 +1,9 @@
 package com.xadneil.server.net.handlers;
 
 import com.xadneil.client.net.Packet;
-import com.xadneil.server.net.PacketCreator;
 import com.xadneil.server.Player;
 import com.xadneil.server.Server;
+import com.xadneil.server.net.PacketCreator;
 import com.xadneil.server.net.PacketHandler;
 
 public class LoginHandler implements PacketHandler {

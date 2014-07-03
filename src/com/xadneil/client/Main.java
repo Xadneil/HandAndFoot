@@ -61,9 +61,8 @@ public class Main {
 	private boolean hasDrawn;
 	private int toDiscard = -1;
 	protected Login loginDialog;
-	public static boolean local = true;
-	private static byte[] sorting;
 	public static boolean ascending = true;
+	public static int width;
 
 	/**
 	 * Launch the application.
@@ -73,7 +72,6 @@ public class Main {
 			public void run() {
 				try {
 					Main window = new Main();
-					Surface.loadImages();
 					window.gameFrame.setVisible(true);
 					window.enemyFrame.setVisible(true);
 					window.postInit();
@@ -136,26 +134,19 @@ public class Main {
 		JMenuItem mntmConnect = new JMenuItem("Connect to IP Game");
 		mntmConnect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				InetAddress address;
+
+				String ip = JOptionPane.showInputDialog(gameFrame, "IP: ",
+						"Connect", JOptionPane.QUESTION_MESSAGE);
 				try {
-					InetAddress address;
-					if (local) {
-						address = InetAddress.getLocalHost();
-					} else {
-						String ip = JOptionPane
-								.showInputDialog(gameFrame, "IP: ", "Connect",
-										JOptionPane.QUESTION_MESSAGE);
-						try {
-							address = InetAddress.getByName(ip);
-						} catch (UnknownHostException ex) {
-							JOptionPane.showMessageDialog(gameFrame,
-									"That IP Address is not valid.");
-							return;
-						}
-					}
-					connect(address);
-				} catch (UnknownHostException e) {
-					e.printStackTrace();
+					address = InetAddress.getByName(ip);
+				} catch (UnknownHostException ex) {
+					JOptionPane.showMessageDialog(gameFrame,
+							"That IP Address is not valid.");
+					return;
 				}
+
+				connect(address);
 			}
 		});
 
@@ -175,7 +166,7 @@ public class Main {
 				for (int i = 0; i < 4; i++) {
 					values[Sorting.values()[i].order] = Sorting.values()[i].str;
 				}
-				CustomSort cs = new CustomSort(Main.this, values);
+				OptionsDialog cs = new OptionsDialog(Main.this, values);
 				cs.setVisible(true);
 				cs.setLocationRelativeTo(gameFrame);
 			}
@@ -461,13 +452,14 @@ public class Main {
 	/**
 	 * Loads card display preferences from local storage. Uses
 	 * java.util.prefs.Preferences at the <code>getClass()</code> node. <br>
-	 * Preferences are a byte array at key <code>SORTING</code>. The array
-	 * represents the ordinals of the <code>Sorting</code> enum from left to
-	 * right (4 values), followed by a boolean for ascending/descending
+	 * Sorting preferences are a byte array at key <code>SORTING</code>. The
+	 * array represents the ordinals of the <code>Sorting</code> enum from left
+	 * to right (4 values), followed by a boolean for ascending/descending.<br>
+	 * Card width is stored at key <code>WIDTH</code>.
 	 */
 	private void loadPrefs() {
-		sorting = Preferences.userNodeForPackage(getClass()).getByteArray(
-				"SORTING", null);
+		byte[] sorting = Preferences.userNodeForPackage(getClass())
+				.getByteArray("SORTING", null);
 		if (sorting == null) {
 			// 0,1,2,3 left-to-right, 0 for ascending
 			sorting = new byte[] { 0, 1, 2, 3, 0 };
@@ -479,6 +471,12 @@ public class Main {
 			}
 			ascending = sorting[4] == 0;
 		}
+		width = Preferences.userNodeForPackage(getClass()).getInt("WIDTH", 0);
+		if (width == 0) {
+			width = 73;
+			Preferences.userNodeForPackage(getClass()).putInt("WIDTH", width);
+		}
+		Surface.loadImages(width, (97 * width) / 73);
 	}
 
 	/**
@@ -487,12 +485,23 @@ public class Main {
 	 * @see com.xadneil.client.Main#loadPrefs()
 	 * @param sorting
 	 *            the sorting preferences byte array
+	 * @param width
 	 */
-	public void storePrefs(byte[] sorting) {
-		Main.sorting = sorting;
+	public void storePrefs(byte[] sorting, final int width) {
 		Preferences.userNodeForPackage(getClass()).putByteArray("SORTING",
 				sorting);
 		ascending = sorting[4] == 0;
+		Preferences.userNodeForPackage(getClass()).putInt("WIDTH", width);
+		if (width != Main.width) {
+			new Thread() {
+				@Override
+				public void run() {
+					Surface.loadImages(width, (97 * width) / 73);
+					redraw();
+				}
+			}.start();
+		}
+		Main.width = width;
 	}
 
 	/**

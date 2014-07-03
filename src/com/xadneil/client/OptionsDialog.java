@@ -6,14 +6,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.Beans;
 
+import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
 import javax.swing.DropMode;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JSlider;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 
@@ -23,13 +26,15 @@ import javax.swing.border.EmptyBorder;
  * @author Daniel
  */
 @SuppressWarnings("serial")
-public class CustomSort extends JDialog {
+public class OptionsDialog extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
 	private final ButtonGroup buttonGroup = new ButtonGroup();
 	@SuppressWarnings("rawtypes")
 	private JList list;
 	private JRadioButton rdbtnAscending;
+	private JRadioButton rdbtnDescending;
+	private JSlider slider;
 
 	/**
 	 * Create the dialog.
@@ -40,10 +45,11 @@ public class CustomSort extends JDialog {
 	 *            the initial ordering to display
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public CustomSort(final Main main, final String[] values) {
+	public OptionsDialog(final Main main, final String[] values) {
+		super(main.gameFrame, "Options", true);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-		setTitle("Options");
-		setBounds(100, 100, 210, 195);
+		//setPreferredSize(new Dimension(210, 195));
+		setLocationRelativeTo(main.gameFrame);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.NORTH);
@@ -89,7 +95,8 @@ public class CustomSort extends JDialog {
 							}
 						}
 						ret[4] = (byte) (rdbtnAscending.isSelected() ? 0 : 1);
-						main.storePrefs(ret);
+						
+						main.storePrefs(ret, slider.getValue());
 						dispose();
 					}
 				});
@@ -110,23 +117,42 @@ public class CustomSort extends JDialog {
 			JPanel panel = new JPanel();
 			getContentPane().add(panel, BorderLayout.WEST);
 			{
-				rdbtnAscending = new JRadioButton("Ascending");
-				if (Beans.isDesignTime()) {
+				panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+				{
+					JPanel panel_1 = new JPanel();
+					panel.add(panel_1);
+					rdbtnAscending = new JRadioButton("Ascending");
+					panel_1.add(rdbtnAscending);
 					rdbtnAscending.setSelected(true);
-				} else {
-					rdbtnAscending.setSelected(Main.ascending);
+					buttonGroup.add(rdbtnAscending);
+					rdbtnDescending = new JRadioButton("Descending");
+					panel_1.add(rdbtnDescending);
+					buttonGroup.add(rdbtnDescending);
+					if (!Beans.isDesignTime()) {
+						rdbtnAscending.setSelected(Main.ascending);
+						rdbtnDescending.setSelected(!Main.ascending);
+					}
 				}
-				buttonGroup.add(rdbtnAscending);
-				panel.add(rdbtnAscending);
-			}
-			{
-				JRadioButton rdbtnDescending = new JRadioButton("Descending");
-				if (!Beans.isDesignTime()) {
-					rdbtnDescending.setSelected(!Main.ascending);
+				{
+					JPanel panel_1 = new JPanel();
+					panel.add(panel_1);
+					{
+						JLabel lblNewLabel = new JLabel("Card Size");
+						panel_1.add(lblNewLabel);
+					}
+					{
+						slider = new JSlider();
+						slider.setValue(73);
+						if (!Beans.isDesignTime()) {
+							slider.setValue(Main.width);
+						}
+						slider.setMaximum(150);
+						slider.setMinimum(50);
+						panel_1.add(slider);
+					}
 				}
-				buttonGroup.add(rdbtnDescending);
-				panel.add(rdbtnDescending);
 			}
 		}
+		pack();
 	}
 }
