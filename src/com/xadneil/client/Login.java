@@ -23,8 +23,8 @@ import javax.swing.border.EmptyBorder;
 public class Login extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
-	private JTextField nameField;
-	private JLabel lblError;
+	private final JTextField nameField;
+	private final JLabel lblError;
 
 	/**
 	 * Create the dialog.

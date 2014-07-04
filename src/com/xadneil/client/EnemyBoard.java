@@ -37,7 +37,7 @@ public class EnemyBoard extends JPanel implements ComponentListener {
 	 * Width and Height
 	 */
 	private int w, h;
-	private Map<Integer, ArrayList<Group>> board = new HashMap<>();
+	private final Map<Integer, ArrayList<Group>> board = new HashMap<>();
 
 	/**
 	 * Class Constructor

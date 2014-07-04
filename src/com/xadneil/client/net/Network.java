@@ -16,7 +16,7 @@ public class Network extends Thread {
 
 	private final Socket socket;
 	private boolean active = false;
-	private Main game;
+	private final Main game;
 
 	/**
 	 * Class Constructor
@@ -60,9 +60,9 @@ public class Network extends Thread {
 
 	@Override
 	public void run() {
-		byte[] buffer = new byte[4096];
+		final byte[] buffer = new byte[4096];
 		while (active) {
-			int bytesRead;
+			final int bytesRead;
 			try {
 				bytesRead = socket.getInputStream().read(buffer);
 			} catch (IOException ex) {

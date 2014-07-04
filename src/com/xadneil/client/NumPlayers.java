@@ -23,7 +23,7 @@ import com.xadneil.server.Server;
 @SuppressWarnings("serial")
 public class NumPlayers extends JDialog {
 	private final ButtonGroup buttonGroup = new ButtonGroup();
-	private JRadioButton btn4Players;
+	private final JRadioButton btn4Players;
 
 	/**
 	 * Create the dialog.

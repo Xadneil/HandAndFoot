@@ -79,7 +79,7 @@ public final class Surface extends JPanel implements MouseMotionListener,
 	private boolean leftDown = false;
 	private boolean floating = false;
 	public final static Map<Card, BufferedImage> imageBuffer = new HashMap<>();
-	private Main game;
+	private final Main game;
 	private int round = 1;
 
 	// <displayIndex, (rank, id)>
@@ -102,6 +102,7 @@ public final class Surface extends JPanel implements MouseMotionListener,
 		if (!Beans.isDesignTime())
 			throw new RuntimeException(
 					"Illegal Surface constructor. Use \"new Surface(Main game)\" instead.");
+		game = null;
 	}
 
 	/**

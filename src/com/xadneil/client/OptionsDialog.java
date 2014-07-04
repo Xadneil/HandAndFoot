@@ -31,10 +31,10 @@ public class OptionsDialog extends JDialog {
 	private final JPanel contentPanel = new JPanel();
 	private final ButtonGroup buttonGroup = new ButtonGroup();
 	@SuppressWarnings("rawtypes")
-	private JList list;
-	private JRadioButton rdbtnAscending;
-	private JRadioButton rdbtnDescending;
-	private JSlider slider;
+	private final JList list;
+	private final JRadioButton rdbtnAscending;
+	private final JRadioButton rdbtnDescending;
+	private final JSlider slider;
 
 	/**
 	 * Create the dialog.

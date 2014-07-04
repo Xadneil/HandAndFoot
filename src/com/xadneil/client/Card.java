@@ -7,7 +7,7 @@ package com.xadneil.client;
  */
 public class Card implements Comparable<Card> {
 
-	private String name;
+	private final String name;
 	private final Suit suit;
 	private final int points;
 	private final int rank;
@@ -23,9 +23,13 @@ public class Card implements Comparable<Card> {
 	public Card(int rank, Suit suit) {
 		this.rank = rank;
 		this.suit = suit;
+		String temp = null;
 		switch (rank) {
+		case 0:
+			temp = "";
+			break;
 		case 1:
-			this.name = "a";
+			temp = "a";
 			break;
 		case 2:
 		case 3:
@@ -35,23 +39,25 @@ public class Card implements Comparable<Card> {
 		case 7:
 		case 8:
 		case 9:
-			this.name = String.valueOf(rank);
+			temp = String.valueOf(rank);
 			break;
 		case 10:
-			this.name = "t";
+			temp = "t";
 			break;
 		case 11: // jack
 		case 14: // joker (filename is distinguished by UNDEFINED Suit)
-			this.name = "j";
+			temp = "j";
 			break;
 		case 12:
-			this.name = "q";
+			temp = "q";
 			break;
 		case 13:
-			this.name = "k";
+			temp = "k";
 			break;
+		default:
+			throw new RuntimeException();
 		}
-		this.name += suit.myName;
+		this.name = temp + suit.myName;
 		switch (rank) {
 		case 0:
 			// discard blank placeholder

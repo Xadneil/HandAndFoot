@@ -26,10 +26,10 @@ import com.xadneil.client.net.Discovery;
 @SuppressWarnings("serial")
 public class LocalGame extends JDialog {
 
-	private JList<Discovery.GameDetails> list;
-	private JButton btnRefresh, btnJoinGame;
-	private Main game;
-	private JLabel lblLoading;
+	private final JList<Discovery.GameDetails> list;
+	private final JButton btnRefresh, btnJoinGame;
+	private final Main game;
+	private final JLabel lblLoading;
 
 	/**
 	 * Create the dialog.

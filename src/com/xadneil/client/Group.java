@@ -30,7 +30,7 @@ import java.util.List;
  */
 public class Group implements Iterable<Card> {
 
-	private List<Card> cards;
+	private final List<Card> cards;
 	private Card coverCard;
 	private boolean clean = true;
 	private final int rank;
@@ -64,7 +64,7 @@ public class Group implements Iterable<Card> {
 		for (Card c : toCopy) {
 			_cards.add(new Card(c));
 		}
-		addCards(_cards);
+		this.cards = _cards;
 	}
 
 	/**
