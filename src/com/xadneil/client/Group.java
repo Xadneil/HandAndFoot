@@ -231,4 +231,30 @@ public class Group implements Iterable<Card> {
 	public void setId(int id) {
 		this.id = id;
 	}
+	
+	@Override
+	public boolean equals(Object other) {
+		if (other == this) {
+			return true;
+		}
+		if (other == null) {
+			return false;
+		}
+		if (!(other instanceof Group)) {
+			return false;
+		}
+		Group otherGroup = (Group) other;
+		if (otherGroup.cards.size() != cards.size()) {
+			return false;
+		}
+		boolean cardsEqual = true;
+		
+		for (int i = 0; i < cards.size(); i++) {
+			if (!cards.get(i).equals(otherGroup.cards.get(i))) {
+				cardsEqual = false;
+				break;
+			}
+		}
+		return cardsEqual && otherGroup.getRank() == rank && otherGroup.getId() == id;
+	}
 }

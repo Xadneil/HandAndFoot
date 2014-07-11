@@ -49,10 +49,10 @@ public class Main {
 	 */
 	private static int PORT = 5677;
 	private Network network;
-	private List<Card> hand = new ArrayList<>();
+	private final List<Card> hand = new ArrayList<>();
 	private Group staging;
-	private Map<Integer, ArrayList<Group>> board = new HashMap<>();
-	private EnemyBoard enemyBoard = new EnemyBoard();
+	private final Map<Integer, ArrayList<Group>> board = new HashMap<>();
+	private final EnemyBoard enemyBoard = new EnemyBoard();
 	public JFrame enemyFrame;
 	private Card discard;
 	private Surface surface;
@@ -480,7 +480,7 @@ public class Main {
 	}
 
 	/**
-	 * Stores the sorting preferences on the local machine.
+	 * Stores the preferences on the local machine.
 	 * 
 	 * @see com.xadneil.client.Main#loadPrefs()
 	 * @param sorting

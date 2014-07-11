@@ -1,5 +1,7 @@
 package com.xadneil.client.net;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,10 +61,10 @@ public final class Packet extends ArrayList<Byte> {
 	 *            the int
 	 */
 	public void addInt(int i) {
-		super.add((byte) (i & 0xFF));
-		super.add((byte) ((i >>> 8) & 0xFF));
-		super.add((byte) ((i >>> 16) & 0xFF));
-		super.add((byte) ((i >>> 24) & 0xFF));
+
+		for (byte b : Packet.intToByteArray(i)) {
+			add(b);
+		}
 	}
 
 	/**
@@ -224,10 +226,23 @@ public final class Packet extends ArrayList<Byte> {
 	 * @return the int
 	 */
 	public int getInt() {
-		int b1 = get(position++);
-		int b2 = get(position++) << 8;
-		int b3 = get(position++) << 16;
-		int b4 = get(position++) << 24;
-		return b1 + b2 + b3 + b4;
+		byte b1 = get(position++);
+		byte b2 = get(position++);
+		byte b3 = get(position++);
+		byte b4 = get(position++);
+		return byteArrayToInt(new byte[] { b1, b2, b3, b4 });
+	}
+
+	private static int byteArrayToInt(byte[] b) {
+		final ByteBuffer bb = ByteBuffer.wrap(b);
+		bb.order(ByteOrder.LITTLE_ENDIAN);
+		return bb.getInt();
+	}
+
+	private static byte[] intToByteArray(int i) {
+		final ByteBuffer bb = ByteBuffer.allocate(Integer.SIZE / Byte.SIZE);
+		bb.order(ByteOrder.LITTLE_ENDIAN);
+		bb.putInt(i);
+		return bb.array();
 	}
 }

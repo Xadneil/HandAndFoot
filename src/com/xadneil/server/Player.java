@@ -43,7 +43,7 @@ public class Player {
 	}
 
 	/**
-	 * Gets the player's foot if it exists, or null of not.
+	 * Gets the player's foot if it exists, or null if not.
 	 * 
 	 * @return the player's foot
 	 */
