@@ -2,6 +2,7 @@ package com.xadneil.server.net;
 
 import com.xadneil.client.net.Packet;
 import com.xadneil.server.Player;
+import com.xadneil.server.Server;
 
 /**
  * Class for handling a received packet
@@ -18,5 +19,5 @@ public interface PacketHandler {
 	 * @param player
 	 *            the player that the packet came from
 	 */
-	public void handlePacket(Packet packet, Player player);
+	public void handlePacket(Packet packet, Player player, Server server);
 }

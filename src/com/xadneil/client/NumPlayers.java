@@ -24,6 +24,7 @@ import com.xadneil.server.Server;
 public class NumPlayers extends JDialog {
 	private final ButtonGroup buttonGroup = new ButtonGroup();
 	private final JRadioButton btn4Players;
+	private static Server currentServer = null;
 
 	/**
 	 * Create the dialog.
@@ -59,8 +60,12 @@ public class NumPlayers extends JDialog {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					int numPlayers = btn4Players.isSelected() ? 4 : 6;
-					Server.getInstance().host(numPlayers,
-							new Server.IntegratedServer(game, System.out));
+					if (currentServer != null) {
+						currentServer.stop();
+					}
+					currentServer = new Server();
+					currentServer.host(numPlayers, new Server.IntegratedServer(
+							game, System.out));
 					dispose();
 				}
 			});

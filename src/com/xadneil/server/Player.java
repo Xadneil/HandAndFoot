@@ -29,16 +29,10 @@ public class Player {
 	 * @param number
 	 *            the player number (0 to max - 1)
 	 */
-	public Player(Socket socket, int number) {
-		this.socketReader = new SocketReader(socket, this);
+	public Player(Socket socket, int number, Server server) {
+		this.socketReader = new SocketReader(socket, this, server);
 		this.number = number;
 		resetCards();
-	}
-
-	/**
-	 * Begins listening to the player socket and responding
-	 */
-	public void startListening() {
 		socketReader.start();
 	}
 

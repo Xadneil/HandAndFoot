@@ -9,10 +9,9 @@ import com.xadneil.server.net.PacketHandler;
 public class LoginHandler implements PacketHandler {
 
 	@Override
-	public void handlePacket(Packet packet, Player player) {
+	public void handlePacket(Packet packet, Player player, Server server) {
 		String username = packet.getString();
-		boolean success = Server.getInstance().setName(username,
-				player.getNumber());
+		boolean success = server.setName(username, player.getNumber());
 		player.send(PacketCreator.login(success));
 	}
 }

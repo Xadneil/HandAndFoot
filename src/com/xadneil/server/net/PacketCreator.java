@@ -8,7 +8,6 @@ import com.xadneil.client.Card;
 import com.xadneil.client.Group;
 import com.xadneil.client.Suit;
 import com.xadneil.client.net.Packet;
-import com.xadneil.server.Server;
 
 /**
  * Factory class for creating packets
@@ -30,7 +29,7 @@ public class PacketCreator {
 		return ret;
 	}
 
-	public static Packet draw7(Card[] cards) {
+	public static Packet draw7(Card[] cards, Card discardTop) {
 		Packet ret = new Packet(SendOpcode.DRAW7);
 		ret.add(cards != null); // success
 		if (cards == null) {
@@ -39,10 +38,10 @@ public class PacketCreator {
 		for (int i = 0; i < 7; i++) {
 			ret.addCard(cards[i]);
 		}
-		if (Server.getInstance().getTopDiscard() == null) {
+		if (discardTop == null) {
 			ret.addCard(new Card(0, Suit.UNDEFINED));
 		} else {
-			ret.addCard(Server.getInstance().getTopDiscard());
+			ret.addCard(discardTop);
 		}
 		return ret;
 	}

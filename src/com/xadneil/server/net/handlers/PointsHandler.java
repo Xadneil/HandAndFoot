@@ -12,13 +12,13 @@ import com.xadneil.server.net.PacketHandler;
 public class PointsHandler implements PacketHandler {
 
 	@Override
-	public void handlePacket(Packet packet, Player player) {
-		for (ArrayList<Group> l : Server.getInstance().getBoard().values()) {
+	public void handlePacket(Packet packet, Player player, Server server) {
+		for (ArrayList<Group> l : server.getBoard().values()) {
 			for (Group g : l)
 				for (Card c : g) {
 					player.getHand().add(c);
 				}
 		}
-		Server.getInstance().clearBoard(player.getNumber() % 2);
+		server.clearBoard(player.getNumber() % 2);
 	}
 }

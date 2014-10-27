@@ -15,8 +15,8 @@ import com.xadneil.server.net.SendOpcode;
 public class PlayGroupHandler implements PacketHandler {
 
 	@Override
-	public void handlePacket(Packet packet, Player player) {
-		if (player.getNumber() != Server.getInstance().getTurn()) {
+	public void handlePacket(Packet packet, Player player, Server server) {
+		if (player.getNumber() != server.getTurn()) {
 			player.send(new Packet(SendOpcode.WRONG_TURN));
 			return;
 		}
@@ -28,8 +28,7 @@ public class PlayGroupHandler implements PacketHandler {
 		}
 		if (player.isInFoot()
 				&& player.getHand().size() == 1 + group.getCards().size()) {
-			HashMap<Integer, ArrayList<Group>> board = Server.getInstance()
-					.copyBoard();
+			HashMap<Integer, ArrayList<Group>> board = server.copyBoard();
 			if (!board.containsKey(group.getRank())) {
 				board.put(group.getRank(), new ArrayList<Group>());
 			}
@@ -55,15 +54,14 @@ public class PlayGroupHandler implements PacketHandler {
 		for (Card c : group) {
 			player.getHand().remove(c);
 		}
-		if (!Server.getInstance().getBoard().containsKey(group.getRank())) {
-			Server.getInstance().getBoard()
-					.put(group.getRank(), new ArrayList<Group>());
+		if (!server.getBoard().containsKey(group.getRank())) {
+			server.getBoard().put(group.getRank(), new ArrayList<Group>());
 		}
-		int id = Server.getInstance().getBoard().get(group.getRank()).size();
+		int id = server.getBoard().get(group.getRank()).size();
 		group.setId(id);
-		Server.getInstance().getBoard().get(group.getRank()).add(group);
+		server.getBoard().get(group.getRank()).add(group);
 		player.send(PacketCreator.play(false /* group */, true /* success */, id));
-		Server.getInstance().checkAndSendFoot();
-		Server.getInstance().playOthers(group);
+		server.checkAndSendFoot();
+		server.playOthers(group);
 	}
 }

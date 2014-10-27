@@ -9,11 +9,11 @@ import com.xadneil.server.net.SendOpcode;
 public class DrawHandler implements PacketHandler {
 
 	@Override
-	public void handlePacket(Packet packet, Player player) {
-		if (player.getNumber() != Server.getInstance().getTurn()) {
+	public void handlePacket(Packet packet, Player player, Server server) {
+		if (player.getNumber() != server.getTurn()) {
 			player.send(new Packet(SendOpcode.WRONG_TURN));
 		} else {
-			Server.getInstance().draw();
+			server.draw();
 		}
 	}
 }

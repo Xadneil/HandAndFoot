@@ -29,7 +29,6 @@ import com.xadneil.server.net.PacketCreator;
 public class Server {
 
 	public static final int PORT = 5677;
-	private static Server instance;
 	private int numPlayers;
 	private Player[] players;
 	private String[] names;
@@ -60,6 +59,7 @@ public class Server {
 	private int[] score = new int[2];
 	private PrintStream out = System.out;
 	private Discovery discovery;
+	private Thread discoveryThread;
 
 	/**
 	 * Class constructor
@@ -241,6 +241,9 @@ public class Server {
 
 				// Accept players
 				for (int i = 0; i < Server.this.numPlayers; i++) {
+					if (server.isClosed()) {
+						break;
+					}
 					final Socket s;
 					try {
 						s = server.accept(); // blocks
@@ -250,17 +253,17 @@ public class Server {
 								+ s.getInetAddress().getHostAddress());
 					} catch (IOException ex) {
 						out.println("Error while accepting connection to player "
-								+ i + ".\r\nExiting.");
+								+ (i + 1) + ". Retrying.");
 						ex.printStackTrace();
-						System.exit(1);
-						break;
+						// don't increment i for retry
+						i--;
+						continue;
 					}
 					final int j = i;
 					new Thread("Player " + j + " startup") {
 						@Override
 						public void run() {
-							players[j] = new Player(s, j);
-							players[j].startListening();
+							players[j] = new Player(s, j, Server.this);
 						}
 					}.start();
 				}
@@ -278,7 +281,8 @@ public class Server {
 		}.start();
 		// start discovery server, where players can find local games
 		discovery = new Discovery();
-		new Thread(discovery, "Discovery").start();
+		discoveryThread = new Thread(discovery, "Discovery");
+		discoveryThread.start();
 	}
 
 	/**
@@ -391,7 +395,7 @@ public class Server {
 			}
 			round++;
 		} else {
-			Server.getInstance().endTurn();
+			endTurn();
 		}
 	}
 
@@ -414,7 +418,7 @@ public class Server {
 	 */
 	public void pickUpDiscard() {
 		if (discard.size() < 7) {
-			players[turn].send(PacketCreator.draw7(null));
+			players[turn].send(PacketCreator.draw7(null, null));
 			return;
 		}
 		int numCards = 0;
@@ -428,7 +432,7 @@ public class Server {
 			}
 		}
 		if (numCards < 2) {
-			players[turn].send(PacketCreator.draw7(null));
+			players[turn].send(PacketCreator.draw7(null, null));
 			return;
 		}
 		Card[] ret = new Card[7];
@@ -438,11 +442,12 @@ public class Server {
 			players[turn].getHand().add(temp);
 		}
 
-		players[turn].send(PacketCreator.draw7(ret));
+		players[turn].send(PacketCreator.draw7(ret, getTopDiscard()));
 		if (discard.isEmpty())
 			sendAll(PacketCreator.discardNotify(new Card(0, Suit.UNDEFINED)));
 		else
-			sendAll(PacketCreator.discardNotify(discard.get(discard.size() - 1)));
+			sendAll(PacketCreator
+					.discardNotify(discard.get(discard.size() - 1)));
 	}
 
 	/**
@@ -546,15 +551,23 @@ public class Server {
 	}
 
 	/**
-	 * Gets the singleton instance of the server
-	 * 
-	 * @return the server
+	 * Disconnects everyone and stops all threads.
 	 */
-	public static Server getInstance() {
-		if (instance == null) {
-			instance = new Server();
+	public void stop() {
+		for (Player p : players) {
+			if (p != null) {
+				p.disconnect();
+			}
 		}
-		return instance;
+		if (discoveryThread.isAlive()) {
+			discovery.close();
+		}
+		if (server != null && !server.isClosed()) {
+			try {
+				server.close();
+			} catch (IOException e) {
+			}
+		}
 	}
 
 	/**
@@ -587,6 +600,6 @@ public class Server {
 		} else {
 			numPlayers = 2; // TODO testing
 		}
-		getInstance().host(numPlayers);
+		(new Server()).host(numPlayers);
 	}
 }

@@ -5,6 +5,7 @@ import java.net.Socket;
 
 import com.xadneil.client.net.Packet;
 import com.xadneil.server.Player;
+import com.xadneil.server.Server;
 
 /**
  * Class for receiving and sending packets to a player
@@ -16,6 +17,7 @@ public class SocketReader extends Thread {
 	private final Socket socket;
 	private boolean active = false;
 	private final Player player;
+	private final Server server;
 
 	/**
 	 * Class Constructor
@@ -25,10 +27,11 @@ public class SocketReader extends Thread {
 	 * @param player
 	 *            the player associated with this reader
 	 */
-	public SocketReader(Socket s, Player player) {
+	public SocketReader(Socket s, Player player, Server server) {
 		super(s.getInetAddress().getHostAddress() + " reader");
 		this.socket = s;
 		this.player = player;
+		this.server = server;
 	}
 
 	/**
@@ -94,7 +97,7 @@ public class SocketReader extends Thread {
 						packet.getOpcode());
 				if (h != null)
 					try {
-						h.handlePacket(packet, player);
+						h.handlePacket(packet, player, server);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}

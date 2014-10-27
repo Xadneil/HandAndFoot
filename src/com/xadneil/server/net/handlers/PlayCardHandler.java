@@ -16,8 +16,8 @@ import com.xadneil.server.net.SendOpcode;
 public class PlayCardHandler implements PacketHandler {
 
 	@Override
-	public void handlePacket(Packet packet, Player player) {
-		if (player.getNumber() != Server.getInstance().getTurn()) {
+	public void handlePacket(Packet packet, Player player, Server server) {
+		if (player.getNumber() != server.getTurn()) {
 			player.send(new Packet(SendOpcode.WRONG_TURN));
 		}
 		int id = packet.getInt();
@@ -25,8 +25,7 @@ public class PlayCardHandler implements PacketHandler {
 		Card c = packet.getCard();
 
 		if (player.isInFoot() && player.getHand().size() == 2) {
-			HashMap<Integer, ArrayList<Group>> board = Server.getInstance()
-					.copyBoard();
+			HashMap<Integer, ArrayList<Group>> board = server.copyBoard();
 			Group.Result res = board.get(rank).get(id)
 					.addCards(Arrays.asList(c));
 			if (res == Group.Result.SUCCESS) {
@@ -49,8 +48,8 @@ public class PlayCardHandler implements PacketHandler {
 				}
 			}
 		}
-		Group.Result res = Server.getInstance().getBoard().get(rank)
-				.get(id).addCards(Arrays.asList(c));
+		Group.Result res = server.getBoard().get(rank).get(id)
+				.addCards(Arrays.asList(c));
 		// TODO Still some discontinuity here (fixed?)
 		boolean success = res == Group.Result.SUCCESS;
 
@@ -58,12 +57,12 @@ public class PlayCardHandler implements PacketHandler {
 			boolean sanity = player.getHand().remove(c);
 			if (!sanity)
 				throw new RuntimeException("Could not play single card");
-			Server.getInstance().checkAndSendFoot();
+			server.checkAndSendFoot();
 		}
 		player.send(PacketCreator.play(true, success,
 				success ? id : res.ordinal()));
 		if (success) {
-			Server.getInstance().playOthers(c, rank, id);
+			server.playOthers(c, rank, id);
 		}
 	}
 }
